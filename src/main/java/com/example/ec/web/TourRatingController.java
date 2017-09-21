@@ -48,7 +48,7 @@ public class TourRatingController {
         tourRatingRepository.save(new TourRating(new TourRatingPk(tour, ratingDto.getCustomerId()),ratingDto.getScore(),ratingDto.getComment()));
     }
     
-    //Utilize Paging and Sorting.
+    //Utilize Paging and Sorting. See commit for changes.
     @RequestMapping(method = RequestMethod.GET)
     public Page<RatingDto> getAllRatingsForTour(@PathVariable(value = "tourId") int tourId ,Pageable pageable) {
         Tour tour = verifyTour(tourId);
