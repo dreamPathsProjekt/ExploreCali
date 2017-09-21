@@ -30,10 +30,10 @@ public class TourServiceImpl implements TourService{
     @Override
     public Tour createTour  (String title, String description, String blurb,
                             Integer price, String duration, String bullets, String keywords,
-                            String tourPackageCode, Difficulty difficulty, Region region) {
+                            String tourPackageName, Difficulty difficulty, Region region) {
         //find tourPackage in db
-        TourPackage tourPackage = tourPackageRepository.findOne(tourPackageCode);
-        if(tourPackage == null) throw new RuntimeException("Tour Package Code does not exist: " + tourPackageCode);
+        TourPackage tourPackage = tourPackageRepository.findByName(tourPackageName);
+        if(tourPackage == null) throw new RuntimeException("Tour Package Code does not exist: " + tourPackageName);
         
         return tourRepository.save(new Tour(title, description, blurb, price, duration, bullets, keywords, tourPackage, difficulty, region));
     }
