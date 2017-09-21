@@ -54,13 +54,39 @@ public class TourRatingController {
         return tourRatingRepository.findByPkTourId(tourId).stream().map((tourRating) -> toDto(tourRating)).collect(Collectors.toList());
     }
     
-    //Return key:value -> "average":avgvalue
+    //AbstractMap ->Return key:value -> "average":avgvalue. OptionalDouble -> calculate average.
     @RequestMapping(method = RequestMethod.GET, path = "/average")
     public AbstractMap.SimpleImmutableEntry<String, Double> getAverage(@PathVariable(value = "tourId") int tourId) {
         verifyTour(tourId);
         List<TourRating> tourRatings = tourRatingRepository.findByPkTourId(tourId);
         OptionalDouble average = tourRatings.stream().mapToInt(TourRating::getScore).average(); 
         return new AbstractMap.SimpleImmutableEntry<>("average", average.isPresent() ? average.getAsDouble() : null);
+    }
+    
+    @RequestMapping(method = RequestMethod.PUT)
+    public RatingDto updateWithPut(@PathVariable(value = "tourId") int tourId, @RequestBody @Validated RatingDto ratingDto) {
+        TourRating tourRating = verifyTourRating(tourId, ratingDto.getCustomerId());
+        
+        tourRating.setScore(ratingDto.getScore());
+        tourRating.setComment(ratingDto.getComment());
+        
+        return toDto(tourRatingRepository.save(tourRating));
+    }
+    
+    @RequestMapping(method = RequestMethod.PATCH)
+    public RatingDto updateWithPatch(@PathVariable(value = "tourId") int tourId, @RequestBody @Validated RatingDto ratingDto) {
+        TourRating tourRating = verifyTourRating(tourId, ratingDto.getCustomerId());
+        
+        if(ratingDto.getScore() != null)        tourRating.setScore(ratingDto.getScore());
+        if(ratingDto.getComment() != null)      tourRating.setComment(ratingDto.getComment());
+        
+        return toDto(tourRatingRepository.save(tourRating));
+    }
+    
+    @RequestMapping(method = RequestMethod.DELETE, path = "/{customerId}")
+    public void deleteRating(@PathVariable(value = "tourId") int tourId, @PathVariable(value = "customerId") int customerId) {
+        TourRating tourRating = verifyTourRating(tourId, customerId);
+        tourRatingRepository.delete(tourRating);
     }
     
     /**
