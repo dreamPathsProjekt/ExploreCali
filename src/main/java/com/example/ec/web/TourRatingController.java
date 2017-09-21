@@ -48,10 +48,16 @@ public class TourRatingController {
         tourRatingRepository.save(new TourRating(new TourRatingPk(tour, ratingDto.getCustomerId()),ratingDto.getScore(),ratingDto.getComment()));
     }
     
+    //Utilize Paging and Sorting.
     @RequestMapping(method = RequestMethod.GET)
-    public List<RatingDto> getAllRatingsForTour(@PathVariable(value = "tourId") int tourId) {
+    public Page<RatingDto> getAllRatingsForTour(@PathVariable(value = "tourId") int tourId ,Pageable pageable) {
         Tour tour = verifyTour(tourId);
-        return tourRatingRepository.findByPkTourId(tourId).stream().map((tourRating) -> toDto(tourRating)).collect(Collectors.toList());
+        Page<TourRating> tourRatingPage = tourRatingRepository.findByPkTourId(tourId, pageable);
+
+        //use getContent() method of Page -> and then stream it as usual.
+        List<RatingDto> tourRatingDtos = tourRatingPage.getContent() 
+                .stream().map((tourRating) -> toDto(tourRating)).collect(Collectors.toList()); 
+        return new PageImpl<>(tourRatingDtos, pageable, tourRatingPage.getTotalPages());
     }
     
     //AbstractMap ->Return key:value -> "average":avgvalue. OptionalDouble -> calculate average.

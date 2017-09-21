@@ -26,7 +26,7 @@ public interface TourRatingRepository extends CrudRepository<TourRating, TourRat
      */
     List<TourRating> findByPkTourId(Integer tourId);
 
-    //Overload method to utilize paging and sorting
+    //Overload method to utilize paging and sorting.Also do this on RestControllers get methods.
     Page<TourRating> findByPkTourId(Integer tourId, Pageable pageable);
     /**
      * Lookup a TourRating by the TourId and Customer Id
